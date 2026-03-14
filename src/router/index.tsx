@@ -6,6 +6,7 @@ import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { PacientesPage } from '@/pages/pacientes/PacientesPage'
 import { CitasPage } from '@/pages/citas/CitasPage'
 import { ServiciosPage } from '@/pages/servicios/ServiciosPage'
+import { ConfiguracionPage } from '@/pages/configuracion/ConfiguracionPage'
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
           { path: '/pacientes', element: <PacientesPage /> },
           { path: '/citas', element: <CitasPage /> },
           { path: '/servicios', element: <ServiciosPage /> },
+          { path: '/configuracion', element: <ConfiguracionPage /> },
         ],
       },
     ],

@@ -57,5 +57,6 @@ export interface AuthResponse {
 
 export interface WhatsAppStatus {
   connected: boolean
+  qrPending: boolean
   message: string
 }
