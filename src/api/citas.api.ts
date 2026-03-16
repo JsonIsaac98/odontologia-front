@@ -47,3 +47,13 @@ export const updateCita = async (id: string, data: UpdateCitaDto): Promise<Cita>
 export const deleteCita = async (id: string): Promise<void> => {
   await api.delete(`/citas/${id}`)
 }
+
+export interface RecordatorioResult {
+  exito: boolean
+  mensaje: string
+}
+
+export const enviarRecordatorio = async (id: string): Promise<RecordatorioResult> => {
+  const res = await api.post<RecordatorioResult>(`/citas/${id}/recordatorio`)
+  return res.data
+}

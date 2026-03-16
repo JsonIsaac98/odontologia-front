@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Plus, Pencil, Trash2, Calendar, CheckCheck, XCircle,
+  Plus, Pencil, Trash2, Calendar,
   ChevronDown, LayoutList, CalendarDays,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { useCitas, useDeleteCita, useUpdateCita } from '@/hooks/useCitas'
+import { BtnRecordatorio } from '@/components/BtnRecordatorio'
 import { CitaForm } from './CitaForm'
 import { CalendarioView } from './CalendarioView'
 import { formatDateTime } from '@/lib/utils'
@@ -174,7 +175,7 @@ export function CitasPage() {
                   <th className="px-4 py-3 text-left font-medium text-slate-600">Servicio</th>
                   <th className="px-4 py-3 text-left font-medium text-slate-600">Duración</th>
                   <th className="px-4 py-3 text-left font-medium text-slate-600">Estado</th>
-                  <th className="px-4 py-3 text-center font-medium text-slate-600">Rec.</th>
+                  <th className="px-4 py-3 text-center font-medium text-slate-600">WhatsApp</th>
                   <th className="px-4 py-3 text-right font-medium text-slate-600">Acciones</th>
                 </tr>
               </thead>
@@ -230,9 +231,12 @@ export function CitasPage() {
                             </DropdownMenu>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            {cita.recordatorio_enviado
-                              ? <CheckCheck className="w-4 h-4 text-green-500 inline" />
-                              : <XCircle className="w-4 h-4 text-slate-300 inline" />}
+                            <BtnRecordatorio
+                              citaId={cita.id}
+                              enviado={cita.recordatorio_enviado}
+                              paciente={`${cita.paciente.nombre} ${cita.paciente.apellido}`}
+                              variant="icon"
+                            />
                           </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center justify-end gap-1">

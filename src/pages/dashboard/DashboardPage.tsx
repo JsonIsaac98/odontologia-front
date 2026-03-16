@@ -1,8 +1,9 @@
-import { RefreshCw, Calendar, Users, CheckCircle, Clock, CheckCheck, XCircle, Wifi, WifiOff } from 'lucide-react'
+import { RefreshCw, Calendar, Users, CheckCircle, Clock, Wifi, WifiOff } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { BtnRecordatorio } from '@/components/BtnRecordatorio'
 import { useCitasHoy } from '@/hooks/useCitas'
 import { usePacientes } from '@/hooks/usePacientes'
 import { useWhatsAppStatus } from '@/hooks/useWhatsApp'
@@ -93,7 +94,7 @@ export function DashboardPage() {
                         <th className="pb-2 text-left font-medium">Paciente</th>
                         <th className="pb-2 text-left font-medium">Servicio</th>
                         <th className="pb-2 text-left font-medium">Estado</th>
-                        <th className="pb-2 text-center font-medium">Recordatorio</th>
+                        <th className="pb-2 text-center font-medium">WhatsApp</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -114,11 +115,12 @@ export function DashboardPage() {
                               <Badge variant={badge.variant}>{badge.label}</Badge>
                             </td>
                             <td className="py-2.5 text-center">
-                              {cita.recordatorio_enviado ? (
-                                <CheckCheck className="w-4 h-4 text-green-500 inline" />
-                              ) : (
-                                <XCircle className="w-4 h-4 text-slate-300 inline" />
-                              )}
+                              <BtnRecordatorio
+                                citaId={cita.id}
+                                enviado={cita.recordatorio_enviado}
+                                paciente={`${cita.paciente.nombre} ${cita.paciente.apellido}`}
+                                variant="icon"
+                              />
                             </td>
                           </tr>
                         )

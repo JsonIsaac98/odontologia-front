@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,7 +10,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import { useCreatePaciente, useUpdatePaciente } from '@/hooks/usePacientes'
+import { cn } from '@/lib/utils'
 import type { Paciente } from '@/types'
+
+const PREFIJO = '502'
 
 const schema = z.object({
   nombre: z.string().min(2, 'Mínimo 2 caracteres'),
@@ -23,6 +27,10 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+/** Quita el prefijo 502 si lo tiene, para mostrar sólo el resto en el input */
+const sinPrefijo = (valor: string) =>
+  valor.startsWith(PREFIJO) ? valor.slice(PREFIJO.length) : valor
+
 interface Props {
   paciente?: Paciente
   onSuccess: () => void
@@ -32,6 +40,9 @@ export function PacienteForm({ paciente, onSuccess }: Props) {
   const { toast } = useToast()
   const createMutation = useCreatePaciente()
   const updateMutation = useUpdatePaciente()
+
+  // Checkbox "el mismo del teléfono"
+  const [mismoTel, setMismoTel] = useState(false)
 
   const {
     register,
@@ -45,7 +56,8 @@ export function PacienteForm({ paciente, onSuccess }: Props) {
       nombre: paciente?.nombre ?? '',
       apellido: paciente?.apellido ?? '',
       telefono: paciente?.telefono ?? '',
-      whatsapp: paciente?.whatsapp ?? '',
+      // El campo interno guarda el número completo (con 502)
+      whatsapp: paciente?.whatsapp ?? PREFIJO,
       fecha_nacimiento: paciente?.fecha_nacimiento ?? '',
       genero: paciente?.genero ?? '',
       notas: paciente?.notas ?? '',
@@ -53,6 +65,15 @@ export function PacienteForm({ paciente, onSuccess }: Props) {
   })
 
   const isLoading = createMutation.isPending || updateMutation.isPending
+  const telefonoWatch = watch('telefono')
+  const whatsappWatch = watch('whatsapp')
+
+  // Cuando el checkbox está activo, sincroniza whatsapp con teléfono
+  useEffect(() => {
+    if (mismoTel) {
+      setValue('whatsapp', PREFIJO + telefonoWatch, { shouldValidate: true })
+    }
+  }, [mismoTel, telefonoWatch, setValue])
 
   const onSubmit = async (data: FormData) => {
     const payload = {
@@ -80,6 +101,9 @@ export function PacienteForm({ paciente, onSuccess }: Props) {
 
   const generoValue = watch('genero')
 
+  // El sufijo del whatsapp (sin el 502 delante)
+  const whatsappSufijo = sinPrefijo(whatsappWatch ?? '')
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
@@ -97,14 +121,47 @@ export function PacienteForm({ paciente, onSuccess }: Props) {
 
       <div className="space-y-1.5">
         <Label>Teléfono *</Label>
-        <Input placeholder="55551234" {...register('telefono')} />
+        <Input
+          placeholder="55551234"
+          {...register('telefono')}
+        />
         {errors.telefono && <p className="text-xs text-red-500">{errors.telefono.message}</p>}
       </div>
 
+      {/* WhatsApp con prefijo fijo 502 */}
       <div className="space-y-1.5">
-        <Label>WhatsApp *</Label>
-        <Input placeholder="50255551234" {...register('whatsapp')} />
-        {errors.whatsapp && <p className="text-xs text-red-500">{errors.whatsapp.message}</p>}
+        <div className="flex items-center justify-between">
+          <Label>WhatsApp *</Label>
+          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              className="w-3.5 h-3.5 rounded accent-blue-600"
+              checked={mismoTel}
+              onChange={(e) => setMismoTel(e.target.checked)}
+            />
+            <span className="text-xs text-slate-500">El mismo del teléfono</span>
+          </label>
+        </div>
+        <div className="flex">
+          {/* Prefijo fijo */}
+          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-slate-100 text-slate-500 text-sm font-medium">
+            +{PREFIJO}
+          </span>
+          <Input
+            className="rounded-l-none"
+            placeholder="55551234"
+            disabled={mismoTel}
+            value={whatsappSufijo}
+            onChange={(e) => {
+              // Solo dígitos
+              const soloDigitos = e.target.value.replace(/\D/g, '')
+              setValue('whatsapp', PREFIJO + soloDigitos, { shouldValidate: true })
+            }}
+          />
+        </div>
+        {errors.whatsapp && (
+          <p className={cn('text-xs text-red-500')}>{errors.whatsapp.message}</p>
+        )}
       </div>
 
       <div className="space-y-1.5">

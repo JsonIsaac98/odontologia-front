@@ -5,6 +5,7 @@ import {
   createCita,
   updateCita,
   deleteCita,
+  enviarRecordatorio,
   type CitaFilters,
   type CreateCitaDto,
   type UpdateCitaDto,
@@ -53,6 +54,14 @@ export const useDeleteCita = () => {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => deleteCita(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['citas'] }),
+  })
+}
+
+export const useEnviarRecordatorio = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => enviarRecordatorio(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['citas'] }),
   })
 }

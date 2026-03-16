@@ -6,7 +6,7 @@ import {
 } from 'date-fns'
 import { es } from 'date-fns/locale'
 import {
-  ChevronLeft, ChevronRight, Plus, Clock, CheckCheck, XCircle,
+  ChevronLeft, ChevronRight, Plus, Clock,
   Pencil, Trash2, CalendarDays,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/components/ui/use-toast'
+import { BtnRecordatorio } from '@/components/BtnRecordatorio'
 import { useCitasMes, useDeleteCita } from '@/hooks/useCitas'
 import { CitaCalendarioForm } from './CitaCalendarioForm'
 import { cn, formatTime } from '@/lib/utils'
@@ -262,11 +263,14 @@ export function CalendarioView({ onEditCita }: Props) {
                             {cita.servicio && (
                               <p className="text-xs text-slate-500 truncate">{cita.servicio.nombre}</p>
                             )}
-                            <div className="flex items-center gap-1 mt-0.5 text-xs text-slate-400">
-                              <span>{cita.duracion_min} min</span>
-                              {cita.recordatorio_enviado
-                                ? <CheckCheck className="w-3.5 h-3.5 text-green-500" />
-                                : <XCircle className="w-3.5 h-3.5" />}
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-slate-400">{cita.duracion_min} min</span>
+                              <BtnRecordatorio
+                                citaId={cita.id}
+                                enviado={cita.recordatorio_enviado}
+                                paciente={`${cita.paciente.nombre} ${cita.paciente.apellido}`}
+                                variant="icon"
+                              />
                             </div>
                           </div>
                           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
